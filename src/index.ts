@@ -36,8 +36,12 @@ export const serve = (application: Application, port: number, callback?: () => v
   const injector = new Injector();
 
   if(applicationInstance.services) {
-    applicationInstance.services.forEach(service => {
-      injector.resolve(service);
+    applicationInstance.services.forEach(async (service) => {
+      const serviceInstance = injector.resolve(service);
+
+      if(typeof serviceInstance.init === 'function') {
+        await serviceInstance.init();
+      }
     });
   }
 
