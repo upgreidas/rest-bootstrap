@@ -42,6 +42,45 @@ export class ArticleController {
 }
 ```
 
+### Dependency injection
+```typescript
+@Service()
+export class DatabaseService {
+  create(table: string, data) {
+  }
+
+  delete(table: string, id: number) {
+  }
+};
+
+@Service()
+export class ArticleService {
+  constructor(private database: DatabaseService) {
+  }
+
+  createArticle(data) {
+    return this.database.create('articles', data);
+  }
+
+  deleteArticle(id: number) {
+    return this.database.delete('articles', id);
+  }
+};
+
+@Controller('/articles')
+export class ArticleController {
+  constructor(private articleService: ArticleService) {
+  }
+
+  @Post('/')
+  createArticle(req: Request, res: Response) {
+    const article = this.articleService.createArticle(req.body);
+
+    res.send(article);
+  }
+}
+```
+
 ### Application class
 ```typescript
 export class ExampleApplication {
@@ -55,6 +94,11 @@ export class ExampleApplication {
   middleware = [
     helmet(),
     cors(),
+  ];
+
+  services = [
+    DatabaseService,
+    ArticleService,
   ];
 
   // Custom error handler
