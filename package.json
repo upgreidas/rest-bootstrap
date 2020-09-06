@@ -20,7 +20,10 @@
     "decorators",
     "controllers",
     "rest",
-    "framework"
+    "framework",
+    "dependency injection",
+    "di",
+    "ioc"
   ],
   "author": "",
   "license": "ISC",
