@@ -88,7 +88,7 @@ export const serve = (application: Application, port: number, callback?: () => v
       // Register route handler
       router[route.requestMethod](route.path, routeMiddleware, async (req: Request, res: Response, next: express.NextFunction) => {
         try {
-          await controllerInstance[String(route.handler)](req, res);
+          await controllerInstance[String(route.handler)](req, res, next);
         } catch(e) {
           next(e);
         }
