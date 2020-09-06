@@ -1,8 +1,9 @@
-import { ControllerConstructor } from './ControllerConstructor';
+import { BaseClass } from './BaseClass';
 import { MiddlewareFunction } from './MiddlewareFunction';
 
 interface ApplicationDefinition {
-  controllers: ControllerConstructor[];
+  controllers: BaseClass[];
+  services?: BaseClass[];
   middleware?: MiddlewareFunction[];
   errorHandler?: MiddlewareFunction;
 }

@@ -8,7 +8,8 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "lib": ["es2015", "dom"],
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": [
     "src/**/*.ts"

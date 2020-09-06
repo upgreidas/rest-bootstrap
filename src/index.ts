@@ -7,8 +7,9 @@ import { Application } from './interfaces/Application';
 import { RouteOptions } from './interfaces/RouteOptions';
 import { MiddlewareFunction } from './interfaces/MiddlewareFunction';
 import { HttpError } from './errors/HttpError';
+import { Injector } from './Injector';
 
-export * from './decorators';
+export * from './Decorators';
 export * from './interfaces/Request';
 export * from './interfaces/Response';
 export * from './errors/BadRequestError';
@@ -32,6 +33,13 @@ export const serve = (application: Application, port: number, callback?: () => v
   const app = express();
 
   const applicationInstance = new application();
+  const injector = new Injector();
+
+  if(applicationInstance.services) {
+    applicationInstance.services.forEach(service => {
+      injector.resolve(service);
+    });
+  }
 
   // Register global middleware
   const globalMiddleware = [...defaultMiddleware];
@@ -46,7 +54,7 @@ export const serve = (application: Application, port: number, callback?: () => v
 
   // Register controllers
   applicationInstance.controllers.forEach(controller => {
-    const controllerInstance = new controller();
+    const controllerInstance = injector.resolve(controller);
     const router = express.Router();
     const prefix = Reflect.getMetadata('prefix', controller) || '';
     const routes = Reflect.getMetadata('routes', controller) as RouteOptions[];
