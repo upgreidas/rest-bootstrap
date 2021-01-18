@@ -55,6 +55,20 @@ const addMiddleware = (target: any, property: string, ...middleware: MiddlewareF
   Reflect.defineMetadata('routes', routes, target.constructor);
 };
 
+const addParam = (target: any, property: string, index: number, type: string, name?: string) => {
+  const params = Reflect.getOwnMetadata('params', target, property) || [];
+
+  params.push({
+    index,
+    type,
+    name,
+  });
+
+  params.sort((a, b) => a.index - b.index);
+
+  Reflect.defineMetadata('params', params, target, property);
+};
+
 export const Service = (): (target: BaseClass) => void => {
   return (target: BaseClass) => {
     //
@@ -106,5 +120,31 @@ export const Delete = (path: string): MethodDecorator => {
 export const Options = (path: string): MethodDecorator => {
   return (target: any, property: string): void => {
     addRoute(target, property, RequestMethod.Options, path);
+  };
+};
+
+export const Req = (target: any, property: string, index: number) => {
+  addParam(target, property, index, 'request');
+};
+
+export const Res = (target: any, property: string, index: number) => {
+  addParam(target, property, index, 'response');
+};
+
+export const Body = (param?: string): ParameterDecorator => {
+  return (target: any, property: string, index: number) => {
+    addParam(target, property, index, 'body', param);
+  };
+};
+
+export const Query = (param?: string): ParameterDecorator => {
+  return (target: any, property: string, index: number) => {
+    addParam(target, property, index, 'query', param);
+  };
+};
+
+export const Header = (param?: string): ParameterDecorator => {
+  return (target: any, property: string, index: number) => {
+    addParam(target, property, index, 'header', param);
   };
 };
