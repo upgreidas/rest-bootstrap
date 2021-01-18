@@ -136,6 +136,12 @@ export const Res = (target: any, property: string, index: number) => {
   addParam(target, property, index, 'response');
 };
 
+export const Param = (param?: string): ParameterDecorator => {
+  return (target: any, property: string, index: number) => {
+    addParam(target, property, index, 'param', param);
+  };
+};
+
 export const Body = (param?: string): ParameterDecorator => {
   return (target: any, property: string, index: number) => {
     addParam(target, property, index, 'body', param);

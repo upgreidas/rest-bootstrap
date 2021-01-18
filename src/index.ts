@@ -7,7 +7,6 @@ import { HttpError } from './errors/HttpError';
 import { Injector } from './Injector';
 import { ParamOptions } from './interfaces/ParamOptions';
 import { MiddlewareInterface } from './interfaces/MiddlewareInterface';
-import { BaseClass } from './interfaces/BaseClass';
 
 export * from './Decorators';
 export * from './errors/BadRequestError';
@@ -98,6 +97,12 @@ export const serve = (application: Application, port: number, callback?: () => v
             return req;
           } else if(param.type === 'response') {
             return res;
+          } else if(param.type === 'param') {
+            if(param.name) {
+              return req.params[param.name];
+            } else {
+              return req.params;
+            }
           } else if(param.type === 'body') {
             if(param.name) {
               return req.body[param.name];
