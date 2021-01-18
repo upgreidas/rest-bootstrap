@@ -113,7 +113,9 @@ export const serve = (application: Application, port: number, callback?: () => v
         });
 
         try {
-          await controllerInstance[String(route.handler)](...extractedParams);
+          const results = await controllerInstance[String(route.handler)](...extractedParams);
+
+          res.send(results);
         } catch(e) {
           next(e);
         }
