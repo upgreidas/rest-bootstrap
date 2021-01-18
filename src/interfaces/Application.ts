@@ -1,11 +1,10 @@
 import { BaseClass } from './BaseClass';
-import { MiddlewareFunction } from './MiddlewareFunction';
 
 interface ApplicationDefinition {
   controllers: BaseClass[];
   services?: BaseClass[];
-  middleware?: MiddlewareFunction[];
-  errorHandler?: MiddlewareFunction;
+  middleware?: BaseClass[];
+  errorHandler?: BaseClass;
 }
 
 export type Application = new (...args: any[]) => ApplicationDefinition;

@@ -2,7 +2,6 @@ import 'reflect-metadata';
 
 import { RequestMethod } from './enums/RequestMethod';
 import { RouteOptions } from './interfaces/RouteOptions';
-import { MiddlewareFunction } from './interfaces/MiddlewareFunction';
 import { BaseClass } from './interfaces/BaseClass';
 
 const addRoute = (target: any, property: string, requestMethod: RequestMethod, path: string): void => {
@@ -30,7 +29,7 @@ const addRoute = (target: any, property: string, requestMethod: RequestMethod, p
   Reflect.defineMetadata('routes', routes, target.constructor);
 };
 
-const addMiddleware = (target: any, property: string, ...middleware: MiddlewareFunction[]): void => {
+const addMiddleware = (target: any, property: string, ...middleware: BaseClass[]): void => {
   let routes = Reflect.getMetadata('routes', target.constructor) as RouteOptions[];
 
   if(!routes) {
@@ -75,7 +74,13 @@ export const Service = (): (target: BaseClass) => void => {
   };
 };
 
-export const Middleware = (...middleware: MiddlewareFunction[]): MethodDecorator => {
+export const Injectable = (): (target: BaseClass) => void => {
+  return (target: BaseClass) => {
+    //
+  };
+};
+
+export const Middleware = (...middleware: BaseClass[]): MethodDecorator => {
   return (target: any, property: string): void => {
     addMiddleware(target, property, ...middleware);
   };

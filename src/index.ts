@@ -3,10 +3,11 @@ import * as bodyParser from 'body-parser';
 
 import { Application } from './interfaces/Application';
 import { RouteOptions } from './interfaces/RouteOptions';
-import { MiddlewareFunction } from './interfaces/MiddlewareFunction';
 import { HttpError } from './errors/HttpError';
 import { Injector } from './Injector';
 import { ParamOptions } from './interfaces/ParamOptions';
+import { MiddlewareInterface } from './interfaces/MiddlewareInterface';
+import { BaseClass } from './interfaces/BaseClass';
 
 export * from './Decorators';
 export * from './errors/BadRequestError';
@@ -46,7 +47,11 @@ export const serve = (application: Application, port: number, callback?: () => v
   const globalMiddleware = [...defaultMiddleware];
 
   if(applicationInstance.middleware) {
-    globalMiddleware.push(...applicationInstance.middleware);
+    applicationInstance.middleware.forEach(middleware => {
+      const middlewareInstance = injector.resolve(middleware) as MiddlewareInterface;
+
+      globalMiddleware.push(middlewareInstance.handle.bind(middlewareInstance));
+    });
   }
 
   globalMiddleware.forEach(middleware => {
@@ -65,14 +70,16 @@ export const serve = (application: Application, port: number, callback?: () => v
         return;
       }
 
-      const routeMiddleware: MiddlewareFunction[] = [];
+      const routeMiddleware: any[] = [];
 
       // Register route middleware
       if(route.middleware) {
         route.middleware.forEach(middleware => {
+          const middlewareInstance = injector.resolve(middleware) as MiddlewareInterface;
+
           const asyncHandler = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
             try {
-              await middleware(req, res, next);
+              await middlewareInstance.handle(req, res, next);
             } catch(e) {
               next(e);
             }
@@ -125,7 +132,15 @@ export const serve = (application: Application, port: number, callback?: () => v
     app.use(prefix, router);
   });
 
-  app.use(applicationInstance.errorHandler || defaultErrorHandler);
+  let errorHandler = defaultErrorHandler;
+
+  if(applicationInstance.errorHandler) {
+    const errorHandlerInstance = injector.resolve(applicationInstance.errorHandler);
+
+    errorHandler = errorHandlerInstance.handle.bind(errorHandlerInstance);
+  }
+
+  app.use(errorHandler);
 
   return app.listen(port, callback);
 };
